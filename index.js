@@ -1,15 +1,24 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // Establish DB connection
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_DATABASE
-});
+async function init() {
+    const db = await mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_DATABASE
+    });
+    // console.dir(db);
+    await inquirer.prompt(menuQuestions)
+        .then(answers => menuChoice(answers.menuOption, db))
+        .catch(e => console.error(e));
+    db.end();
+}
+
+
 
 // Choices array for menu questions
 const menuChoices = [
@@ -174,10 +183,12 @@ const updateEmployeeRoleQuestions = [
     }
 ];
 // Called from menu questions to perform an action based on the users choice
-menuChoice = (answer) => {
+menuChoice = async (answer, db) => {
     console.log(answer);
     switch (answer) {
         case 'View All Employees':
+            const [results] = await db.query('SELECT * FROM employee')
+            console.log(results);
             console.log("Viewing All Employees");
             break;
         case 'Add Employee':
@@ -219,8 +230,4 @@ menuChoice = (answer) => {
     }
 };
 
-
-
-inquirer.prompt(menuQuestions)
-    .then(answers => menuChoice(answers.menuOption))
-    .catch(e => console.error(e));
+init();
