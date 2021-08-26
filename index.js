@@ -1,24 +1,15 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2/promise');
-require('dotenv').config();
-
-// Establish DB connection
+const query = require('./utils/queries');
 
 async function init() {
-    const db = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_DATABASE
-    });
-    // console.dir(db);
+    await displayMenu();
+};
+
+async function displayMenu() {
     await inquirer.prompt(menuQuestions)
-        .then(answers => menuChoice(answers.menuOption, db))
+        .then(answers => menuChoice(answers.menuOption))
         .catch(e => console.error(e));
-    db.end();
-}
-
-
+};
 
 // Choices array for menu questions
 const menuChoices = [
@@ -101,7 +92,7 @@ const employeeRoleChoices = [
 const employeeManagerChoices = [
     {
         name: 'None',
-        value: NaN
+        value: null
     },
     {
         name: 'Marian Mcgregor',
@@ -183,19 +174,19 @@ const updateEmployeeRoleQuestions = [
     }
 ];
 // Called from menu questions to perform an action based on the users choice
-menuChoice = async (answer, db) => {
+menuChoice = async (answer) => {
     console.log(answer);
     switch (answer) {
         case 'View All Employees':
-            const [results] = await db.query('SELECT * FROM employee')
-            console.log(results);
-            console.log("Viewing All Employees");
+            console.log(await query.getAll('employee'));
+            await displayMenu();
             break;
         case 'Add Employee':
             console.log("Adding Employee");
-            inquirer.prompt(addEmployeeQuestions)
+            await inquirer.prompt(addEmployeeQuestions)
                 .then(answers => console.log(answers))
                 .catch(e => console.error(e));
+            await displayMenu();
             break;
         case 'Update Employee Role':
             console.log("Updating Employee Role");
@@ -204,7 +195,8 @@ menuChoice = async (answer, db) => {
                 .catch(e => console.error(e));
             break;
         case 'View All Roles':
-            console.log("Viewing All Roles");
+            console.log(await query.getAll('role'));
+            await displayMenu();
             break;
         case 'Add Role':
             console.log("Adding Role");
@@ -213,7 +205,8 @@ menuChoice = async (answer, db) => {
                 .catch(e => console.error(e));
             break;
         case 'View All Departments':
-            console.log("Viewing All Departments");
+            console.log(await query.getAll('department'));
+            await displayMenu();
             break;
         case 'Add Department':
             console.log("Adding Department");
