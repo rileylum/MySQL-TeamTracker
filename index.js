@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 
+// Choices array for menu questions
 const menuChoices = [
     'View All Employees',
     'Add Employee',
@@ -10,7 +11,7 @@ const menuChoices = [
     'Add Department',
     'Quit'
 ]
-
+// Questions Array for menu
 const menuQuestions = [
     {
         type: 'list',
@@ -19,7 +20,7 @@ const menuQuestions = [
         choices: menuChoices
     }
 ];
-
+// Questions Array for adding a department
 const addDepartmentQuestions = [
     {
         type: 'input',
@@ -27,7 +28,7 @@ const addDepartmentQuestions = [
         message: 'What is the name of the department?'
     }
 ];
-
+// Choices array for department choices, faking results from DB
 const roleDepartmentChoices = [
     {
         name: 'General Management',
@@ -42,7 +43,7 @@ const roleDepartmentChoices = [
         value: 3
     }
 ]
-
+// Questions Array for adding a role
 const addRoleQuestions = [
     {
         type: 'input',
@@ -61,7 +62,7 @@ const addRoleQuestions = [
         choices: roleDepartmentChoices
     }
 ];
-
+// Choices array for role choices, faking results from DB
 const employeeRoleChoices = [
     {
         name: 'CEO',
@@ -76,6 +77,7 @@ const employeeRoleChoices = [
         value: 3
     }
 ];
+// Choices array for manager choices, faking results from DB
 const employeeManagerChoices = [
     {
         name: 'None',
@@ -90,6 +92,7 @@ const employeeManagerChoices = [
         value: 2
     }
 ];
+// Questions Array for adding an employee
 const addEmployeeQuestions = [
     {
         type: 'input',
@@ -114,7 +117,7 @@ const addEmployeeQuestions = [
         choices: employeeManagerChoices
     }
 ];
-
+// Choices Array for employee choices, faking results from DB
 const employeeUpdateChoices = [
     {
         name: 'Marian Mcgregor',
@@ -129,7 +132,7 @@ const employeeUpdateChoices = [
         value: 3
     }
 ];
-
+// Choices Array for role choices, faking results from DB
 const employeeRoleUpdateChoices = [
     {
         name: 'CEO',
@@ -144,7 +147,7 @@ const employeeRoleUpdateChoices = [
         value: 3
     }
 ];
-
+// Questions Array for updating an employees role
 const updateEmployeeRoleQuestions = [
     {
         type: 'list',
@@ -158,7 +161,8 @@ const updateEmployeeRoleQuestions = [
         message: 'Which role do you want to assign the selected employee?',
         choices: employeeRoleUpdateChoices
     }
-]
+];
+// Called from menu questions to perform an action based on the users choice
 menuChoice = (answer) => {
     console.log(answer);
     switch (answer) {
