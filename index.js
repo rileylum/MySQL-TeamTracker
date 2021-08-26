@@ -184,15 +184,16 @@ menuChoice = async (answer) => {
         case 'Add Employee':
             console.log("Adding Employee");
             await inquirer.prompt(addEmployeeQuestions)
-                .then(answers => console.log(answers))
+                .then(answers => query.addEmployee(Object.values(answers)))
                 .catch(e => console.error(e));
             await displayMenu();
             break;
         case 'Update Employee Role':
             console.log("Updating Employee Role");
-            inquirer.prompt(updateEmployeeRoleQuestions)
-                .then(answers => console.log(answers))
+            await inquirer.prompt(updateEmployeeRoleQuestions)
+                .then(answers => query.updateEmployeeRole(Object.values(answers).reverse()))
                 .catch(e => console.error(e));
+            await displayMenu();
             break;
         case 'View All Roles':
             console.log(await query.getAll('role'));
@@ -200,9 +201,10 @@ menuChoice = async (answer) => {
             break;
         case 'Add Role':
             console.log("Adding Role");
-            inquirer.prompt(addRoleQuestions)
-                .then(answers => console.log(answers))
+            await inquirer.prompt(addRoleQuestions)
+                .then(answers => query.addRole(Object.values(answers)))
                 .catch(e => console.error(e));
+            await displayMenu();
             break;
         case 'View All Departments':
             console.log(await query.getAll('department'));
@@ -210,9 +212,10 @@ menuChoice = async (answer) => {
             break;
         case 'Add Department':
             console.log("Adding Department");
-            inquirer.prompt(addDepartmentQuestions)
-                .then(answers => console.log(answers))
+            await inquirer.prompt(addDepartmentQuestions)
+                .then(answers => query.addDepartment(Object.values(answers)))
                 .catch(e => console.error(e));
+            await displayMenu();
             break;
         case 'Quit':
             console.log("Quitting, Bye!");
