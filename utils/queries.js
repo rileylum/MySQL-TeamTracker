@@ -11,9 +11,32 @@ async function openDBConnection() {
     return db;
 };
 
-async function getAll(table) {
+async function getAllEmployees(table) {
     const db = await openDBConnection();
-    queryString = `SELECT * FROM ${table}`
+    queryString = `SELECT employee.first_name, employee.last_name, 
+                role.title AS role, department.name AS deparment, role.salary 
+                FROM employee
+                JOIN role ON employee.role_id = role.id
+                JOIN department on role.department_id = department.id`
+    const [result] = await db.query(queryString);
+    db.end();
+    console.log(result);
+    return result;
+};
+
+async function getAllRoles(table) {
+    const db = await openDBConnection();
+    queryString = `SELECT role.title, role.salary, department.name AS department
+                 FROM role
+                 JOIN department ON role.department_id = department.id`
+    const [result] = await db.query(queryString);
+    db.end();
+    return result;
+};
+
+async function getAllDepartments() {
+    const db = await openDBConnection();
+    queryString = `SELECT name FROM department`
     const [result] = await db.query(queryString);
     db.end();
     return result;
@@ -56,7 +79,9 @@ async function updateEmployeeRole(input) {
     return result;
 };
 
-module.exports.getAll = getAll;
+module.exports.getAllEmployees = getAllEmployees;
+module.exports.getAllRoles = getAllRoles;
+module.exports.getAllDepartments = getAllDepartments;
 module.exports.addEmployee = addEmployee;
 module.exports.addRole = addRole;
 module.exports.addDepartment = addDepartment;

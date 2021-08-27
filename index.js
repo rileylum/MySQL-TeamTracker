@@ -178,7 +178,7 @@ menuChoice = async (answer) => {
     console.log(answer);
     switch (answer) {
         case 'View All Employees':
-            console.log(await query.getAll('employee'));
+            console.log(await query.getAllEmployees());
             await displayMenu();
             break;
         case 'Add Employee':
@@ -196,7 +196,7 @@ menuChoice = async (answer) => {
             await displayMenu();
             break;
         case 'View All Roles':
-            console.log(await query.getAll('role'));
+            console.log(await query.getAllRoles());
             await displayMenu();
             break;
         case 'Add Role':
@@ -207,7 +207,7 @@ menuChoice = async (answer) => {
             await displayMenu();
             break;
         case 'View All Departments':
-            console.log(await query.getAll('department'));
+            console.log(await query.getAllDepartments());
             await displayMenu();
             break;
         case 'Add Department':
