@@ -3,12 +3,19 @@ const query = require('./queries');
 // Choices array for menu questions
 const menuChoices = [
     'View All Employees',
+    'View Employees By Manager',
     'Add Employee',
+    'Delete Employee',
     'Update Employee Role',
+    'Update Employee Manager',
     'View All Roles',
     'Add Role',
+    'Delete Role',
     'View All Departments',
+    'View Employees By Department',
+    'View Deparment Utilized Budget',
     'Add Department',
+    'Delete Department',
     'Quit'
 ]
 // Questions Array for menu
@@ -75,16 +82,21 @@ const getRoleChoices = async () => {
 //  Choices array for manager choices from DB
 const getEmployeeChoices = async () => {
     const allEmployees = await query.getAllEmployees();
-    employeeList = [{ name: 'None', value: null }] // value for no manager
-    employees = allEmployees.map(employee => {
+
+    return allEmployees.map(employee => {
         return {
             name: employee.first_name + ' ' + employee.last_name,
             value: employee.id
         }
     })
+};
+
+const getManagerChoices = async () => {
+    const employeeList = [{ name: 'None', value: null }] // value for no manager
+    employees = await getEmployeeChoices();
     employeeList.push(...employees);
     return employeeList;
-}
+};
 // Questions array for inquirer 
 const buildEmployeeQuestions = async () => {
     employeeQuestions = [
@@ -100,7 +112,7 @@ const buildEmployeeQuestions = async () => {
         }
     ];
     roles = await getRoleChoices();
-    managers = await getEmployeeChoices();
+    managers = await getManagerChoices();
     employeeQuestions.push({
         type: 'list',
         name: 'employeeRole',
@@ -134,11 +146,96 @@ const buildUpdateEmployeeRoleQuestions = async () => {
     }]
 };
 
+const buildUpdateEmployeeManagerQuestions = async () => {
+    employees = await getEmployeeChoices();
+    managers = await getManagerChoices();
+    return [{
+        type: 'list',
+        name: 'employee',
+        message: 'Which employee\'s manager do you want to update?',
+        choices: employees
+    },
+    {
+        type: 'list',
+        name: 'employeeRole',
+        message: 'Which manager do you want to assign the selected employee?',
+        choices: managers
+    }]
+};
+
+const getCurrentManagerChoices = async () => {
+    const allCurrentManagers = await query.getAllCurrentManagers();
+
+    return allCurrentManagers.map(manager => {
+        return {
+            name: manager.first_name + ' ' + manager.last_name,
+            value: manager.id
+        }
+    })
+};
+
+const buildViewEmployeesByManagerQuestions = async () => {
+    managers = await getCurrentManagerChoices();
+    return [{
+        type: 'list',
+        name: 'employeeManager',
+        message: 'Which manager\'s employee\'s do you want to view?',
+        choices: managers
+    }]
+};
+
+const buildEmployeesByDepartmentQuestions = async () => {
+    departments = await getDepartmentChoices();
+    return [{
+        type: 'list',
+        name: 'department',
+        message: 'Which department\'s employee\'s do you want to view?',
+        choices: departments
+    }]
+}
+
+const buildDeleteEmployeeQuestions = async () => {
+    employees = await getEmployeeChoices();
+    return [{
+        type: 'list',
+        name: 'employee',
+        message: 'Which employee do you want to delete?',
+        choices: employees
+    }]
+}
+
+const buildDeleteRoleQuestions = async () => {
+    roles = await getRoleChoices();
+    return [{
+        type: 'list',
+        name: 'role',
+        message: 'Which role do you want to delete?',
+        choices: roles
+    }]
+}
+
+const buildDeleteDepartmentQuestions = async () => {
+    departments = await getDepartmentChoices();
+    return [{
+        type: 'list',
+        name: 'department',
+        message: 'Which department do you want to delete?',
+        choices: departments
+    }]
+}
+
+
 module.exports = {
     menuChoices,
     menuQuestions,
     addDepartmentQuestions,
     buildRoleQuestions,
     buildEmployeeQuestions,
-    buildUpdateEmployeeRoleQuestions
+    buildUpdateEmployeeRoleQuestions,
+    buildUpdateEmployeeManagerQuestions,
+    buildViewEmployeesByManagerQuestions,
+    buildEmployeesByDepartmentQuestions,
+    buildDeleteEmployeeQuestions,
+    buildDeleteRoleQuestions,
+    buildDeleteDepartmentQuestions
 }
