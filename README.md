@@ -14,11 +14,9 @@
 
   3.[Contribution Instructions](#contribution-instructions)
 
-  4.[Testing Instructions](#testing-instructions)
+  4.[Questions](#questions)
 
-  5.[Questions](#questions)
-
-  6.[License](#License)
+  5.[License](#License)
   
 
   ## Installation Instructions
@@ -27,15 +25,24 @@
 
   ## Usage Instructions
 
-  node index
+  To use the application you will need to have mysql installed locally, instructions can be found here: https://www.mysql.com/
 
+  Rename .env.EXAMPLE to .env and fill in the appropriate settings for your mysql environment.
+
+  Run the schema and optionally the seed files to set up the database:
+
+    mysql -u YOUR_USERNAME -p
+    SOURCE db/schema.sql
+    SOURCE db/seed.sql
+
+  Once the above set up is done run the following code to begin!
+
+    node index
+
+  Here is a link to a video demonstration of the application: [VIDEO](https://drive.google.com/file/d/1prmaV7jtX6JllIKJCqErFDnE-h-Qudxq/view?usp=sharing)
   ## Contribution Instructions
 
   I am not actively maintaining this project. Please feel free to fork and make any changes.
-
-  ## Testing Instructions
-
-    N/A
 
   ## Questions
   
