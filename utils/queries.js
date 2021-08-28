@@ -1,5 +1,7 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config({ path: './.env' });
+const path = require('path');
+envPath = path.join('__dirname', '../.env');
+require('dotenv').config({ path: envPath });
 
 async function openDBConnection() {
     const db = await mysql.createConnection({
@@ -17,7 +19,8 @@ async function getAllEmployees(table) {
                 role.title AS role, department.name AS deparment, role.salary 
                 FROM employee
                 JOIN role ON employee.role_id = role.id
-                JOIN department on role.department_id = department.id`
+                JOIN department on role.department_id = department.id
+                ORDER BY employee.id`
     const [result] = await db.query(queryString);
     db.end();
     return result;
@@ -27,7 +30,8 @@ async function getAllRoles(table) {
     const db = await openDBConnection();
     queryString = `SELECT role.id, role.title, role.salary, department.name AS department
                  FROM role
-                 JOIN department ON role.department_id = department.id`
+                 JOIN department ON role.department_id = department.id
+                 ORDER BY role.id`
     const [result] = await db.query(queryString);
     db.end();
     return result;
@@ -35,7 +39,7 @@ async function getAllRoles(table) {
 
 async function getAllDepartments() {
     const db = await openDBConnection();
-    queryString = `SELECT department.id, name FROM department`
+    queryString = `SELECT id, name FROM department ORDER BY department.id`
     const [result] = await db.query(queryString);
     db.end();
     return result;
