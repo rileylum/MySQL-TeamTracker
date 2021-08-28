@@ -13,20 +13,19 @@ async function openDBConnection() {
 
 async function getAllEmployees(table) {
     const db = await openDBConnection();
-    queryString = `SELECT employee.first_name, employee.last_name, 
+    queryString = `SELECT employee.id, employee.first_name, employee.last_name, 
                 role.title AS role, department.name AS deparment, role.salary 
                 FROM employee
                 JOIN role ON employee.role_id = role.id
                 JOIN department on role.department_id = department.id`
     const [result] = await db.query(queryString);
     db.end();
-    console.log(result);
     return result;
 };
 
 async function getAllRoles(table) {
     const db = await openDBConnection();
-    queryString = `SELECT role.title, role.salary, department.name AS department
+    queryString = `SELECT role.id, role.title, role.salary, department.name AS department
                  FROM role
                  JOIN department ON role.department_id = department.id`
     const [result] = await db.query(queryString);
@@ -36,7 +35,7 @@ async function getAllRoles(table) {
 
 async function getAllDepartments() {
     const db = await openDBConnection();
-    queryString = `SELECT name FROM department`
+    queryString = `SELECT department.id, name FROM department`
     const [result] = await db.query(queryString);
     db.end();
     return result;

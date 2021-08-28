@@ -39,140 +39,112 @@ const addDepartmentQuestions = [
         message: 'What is the name of the department?'
     }
 ];
-// Choices array for department choices, faking results from DB
-const roleDepartmentChoices = [
-    {
-        name: 'General Management',
-        value: 1
-    },
-    {
-        name: 'Human Resources',
-        value: 2
-    },
-    {
-        name: 'Sales & Marketing',
-        value: 3
-    }
-]
-// Questions Array for adding a role
-const addRoleQuestions = [
-    {
-        type: 'input',
-        name: 'roleName',
-        message: 'What is the name of the role?'
-    },
-    {
-        type: 'input',
-        name: 'roleSalary',
-        message: 'What is the salary of the role?'
-    },
-    {
+// Choices array for department choices from DB
+const getDepartmentChoices = async () => {
+    const allDepartments = await query.getAllDepartments();
+    return (allDepartments.map(department => {
+        return {
+            name: department.name,
+            value: department.id
+        }
+    }))
+};
+// Questions array for inquirer
+const buildRoleQuestions = async () => {
+    roleQuestions = [
+        {
+            type: 'input',
+            name: 'roleName',
+            message: 'What is the name of the role?'
+        },
+        {
+            type: 'input',
+            name: 'roleSalary',
+            message: 'What is the salary of the role?'
+        }
+    ];
+    departments = await getDepartmentChoices();
+    roleQuestions.push({
         type: 'list',
         name: 'roleDepartment',
         message: 'Which department does the role belong to?',
-        choices: roleDepartmentChoices
-    }
-];
-// Choices array for role choices, faking results from DB
-const employeeRoleChoices = [
-    {
-        name: 'CEO',
-        value: 1
-    },
-    {
-        name: 'Operations Manager',
-        value: 2
-    },
-    {
-        name: 'CFO',
-        value: 3
-    }
-];
-// Choices array for manager choices, faking results from DB
-const employeeManagerChoices = [
-    {
-        name: 'None',
-        value: null
-    },
-    {
-        name: 'Marian Mcgregor',
-        value: 1
-    },
-    {
-        name: 'Xander Oliver',
-        value: 2
-    }
-];
-// Questions Array for adding an employee
-const addEmployeeQuestions = [
-    {
-        type: 'input',
-        name: 'employeeFirstName',
-        message: 'What is the employee\'s first name?'
-    },
-    {
-        type: 'input',
-        name: 'employeeLastName',
-        message: 'What is the employee\'s last name?'
-    },
-    {
+        choices: departments
+    });
+    return roleQuestions;
+};
+
+// Choices array for role choices from DB
+const getRoleChoices = async () => {
+    const allRoles = await query.getAllRoles();
+    return (allRoles.map(role => {
+        return {
+            name: role.title,
+            value: role.id
+        }
+    }))
+};
+//  Choices array for manager choices from DB
+const getEmployeeChoices = async () => {
+    const allEmployees = await query.getAllEmployees();
+    employeeList = [{ name: 'None', value: null }] // value for no manager
+    employees = allEmployees.map(employee => {
+        return {
+            name: employee.first_name + ' ' + employee.last_name,
+            value: employee.id
+        }
+    })
+    employeeList.push(...employees);
+    return employeeList;
+}
+// Questions array for inquirer 
+const buildEmployeeQuestions = async () => {
+    employeeQuestions = [
+        {
+            type: 'input',
+            name: 'employeeFirstName',
+            message: 'What is the employee\'s first name?'
+        },
+        {
+            type: 'input',
+            name: 'employeeLastName',
+            message: 'What is the employee\'s last name?'
+        }
+    ];
+    roles = await getRoleChoices();
+    managers = await getEmployeeChoices();
+    employeeQuestions.push({
         type: 'list',
         name: 'employeeRole',
         message: 'What is the employee\'s role?',
-        choices: employeeRoleChoices
-    },
-    {
+        choices: roles
+    });
+    employeeQuestions.push({
         type: 'list',
         name: 'employeeManager',
         message: 'Who is the employee\'s manager?',
-        choices: employeeManagerChoices
-    }
-];
-// Choices Array for employee choices, faking results from DB
-const employeeUpdateChoices = [
-    {
-        name: 'Marian Mcgregor',
-        value: 1
-    },
-    {
-        name: 'Xander Oliver',
-        value: 2
-    },
-    {
-        name: 'Isabelle Mullins',
-        value: 3
-    }
-];
-// Choices Array for role choices, faking results from DB
-const employeeRoleUpdateChoices = [
-    {
-        name: 'CEO',
-        value: 1
-    },
-    {
-        name: 'Operations Manager',
-        value: 2
-    },
-    {
-        name: 'CFO',
-        value: 3
-    }
-];
+        choices: managers
+    });
+    return employeeQuestions;
+}
+
 // Questions Array for updating an employees role
-const updateEmployeeRoleQuestions = [
-    {
+const buildUpdateEmployeeRoleQuestions = async () => {
+    employees = await getEmployeeChoices();
+    roles = await getRoleChoices();
+    return [{
         type: 'list',
         name: 'employee',
         message: 'Which employee\'s role do you want to update?',
-        choices: employeeUpdateChoices
+        choices: employees
     },
     {
         type: 'list',
         name: 'employeeRole',
         message: 'Which role do you want to assign the selected employee?',
-        choices: employeeRoleUpdateChoices
-    }
-];
+        choices: roles
+    }]
+};
+
 // Called from menu questions to perform an action based on the users choice
 menuChoice = async (answer) => {
     console.log(answer);
@@ -183,14 +155,16 @@ menuChoice = async (answer) => {
             break;
         case 'Add Employee':
             console.log("Adding Employee");
-            await inquirer.prompt(addEmployeeQuestions)
+            questions = await buildEmployeeQuestions();
+            await inquirer.prompt(questions)
                 .then(answers => query.addEmployee(Object.values(answers)))
                 .catch(e => console.error(e));
             await displayMenu();
             break;
         case 'Update Employee Role':
             console.log("Updating Employee Role");
-            await inquirer.prompt(updateEmployeeRoleQuestions)
+            questions = await buildUpdateEmployeeRoleQuestions();
+            await inquirer.prompt(questions)
                 .then(answers => query.updateEmployeeRole(Object.values(answers).reverse()))
                 .catch(e => console.error(e));
             await displayMenu();
@@ -201,7 +175,8 @@ menuChoice = async (answer) => {
             break;
         case 'Add Role':
             console.log("Adding Role");
-            await inquirer.prompt(addRoleQuestions)
+            questions = await buildRoleQuestions();
+            await inquirer.prompt(questions)
                 .then(answers => query.addRole(Object.values(answers)))
                 .catch(e => console.error(e));
             await displayMenu();
